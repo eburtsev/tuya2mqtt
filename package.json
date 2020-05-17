@@ -1,0 +1,33 @@
+{
+  "name": "tuya2mqtt",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/eburtsev/tuya2mqtt",
+  "main": "tuya2mqtt.js",
+  "scripts": {
+    "run": "node tuya2mqtt.js"
+  },
+  "author": {
+    "name": "Eugene Burtsev",
+    "email": "eugene@burtsev.net"
+  },
+  "license": "Apache-2.0",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "color-convert": "^1.9.3",
+    "debug": "^3.2.6",
+    "mqtt": "^2.18.8",
+    "tuyapi": "^5.3.1",
+    "yamljs": "^0.3.0",
+    "lodash": "^4.17.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eburtsev/tuya2mqtt.git"
+  }
+}

@@ -1,0 +1,13 @@
+tuya2mqtt:
+  mqtt:
+    host: localhost
+    port: 1883
+    username: user
+    password: password
+    base-topic: tuya2mqtt
+  devices:
+    - ip: 192.168.0.38
+      id: 1234567890abcdef123456
+      key: 1234567890abcdef
+      version: '3.3'
+      mqtt-topic: friendly-name
