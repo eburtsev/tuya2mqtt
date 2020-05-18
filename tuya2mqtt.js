@@ -34,7 +34,7 @@ const devices = {}
 
 function connectDevices() {
     for (let deviceDescriptor of config.devices) {
-        let device = devices[deviceDescriptor['mqtt-topic']] = new TuyaMqttDevice(deviceDescriptor, mqttClient)
+        let device = devices[deviceDescriptor['mqtt-topic']] = new TuyaMqttDevice(deviceDescriptor)
         device.on('data', data => mqttClient.publish(`${config.mqtt['base-topic']}/${deviceDescriptor['mqtt-topic']}/state`, JSON.stringify(data)))
         device.connect()
     }
@@ -72,6 +72,8 @@ mqttClient.on('message', function (topic, message) {
         } else {
             debug(`Unknown device "${deviceKey}"`)
         }
+    } else if (cmd === 'state') {
+        // Do nothing
     } else {
         debug(`Unknown command: ${cmd}`)
     }

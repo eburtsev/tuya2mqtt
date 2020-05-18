@@ -6,38 +6,69 @@ const TuyaMqttDevice = function (deviceDescriptor) {
     debug(`new TuyaMqttDevice(${deviceDescriptor})`)
 
     const device = new TuyAPI(_.pick(deviceDescriptor, ['ip', 'id', 'key', 'version']))
+    let listeners = {}
+    let connected = false
 
-    device.on('connected', () => debug('Connected to device!'));
-    device.on('disconnected', () => debug('Disconnected from device.'));
-    device.on('error', error => debug('Error!', error));
-    device.on('data', data => debug('Data from device:', data));
+    device.on('connected', () => {
+        debug('Connected to device!');
+        (listeners['connected'] || (() => {}))();
+    });
+
+    device.on('disconnected', () => {
+        connected = false;
+        debug('Disconnected from device.');
+        (listeners['disconnected'] || (() => {}))();
+    });
+
+    device.on('error', error => {
+        debug('Error!', error);
+        (listeners['error'] || (() => {}))(error);
+    });
+
+    device.on('data', data => {
+        debug('Data from device:', data);
+        (listeners['data'] || (() => {}))(data);
+    });
+
+    device.on('heartbeat', () => {
+        debug('Heartbeat received');
+        (listeners['heartbeat'] || (() => {}))();
+    });
 
     return {
-        connect: function () {
+        connect: function (sendAfterConnect) {
             debug('connect() called')
             device.find().then(() => {
                 debug('Device found')
                 // Connect to device
                 device.connect().then(() => {
                     debug('Device connected')
+                    connected = true
+                    if (sendAfterConnect !== undefined) {
+                        this.send(sendAfterConnect)
+                    }
                 })
             })
         },
 
         on: function (event, listener) {
-            debug(`Installing on('${event}') listener.`);
-            device.on(event, listener);
+            debug(`Installing on('${event}') listener.`)
+            listeners[event] = listener
         },
 
         send: function(data) {
-            device.set(data)
+            if (!connected) {
+                this.connect(data)
+            } else {
+                device.set(data)
+            }
         },
 
         disconnect: function () {
-            device.disconnect();
+            device.disconnect()
+            connected = false
         }
     }
 };
 
-
-module.exports = TuyaMqttDevice;
+module.exports = TuyaMqttDevice
