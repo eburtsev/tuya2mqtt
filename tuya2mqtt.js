@@ -49,7 +49,7 @@ const mqttClient = MQTT.connect({
 
 mqttClient.on('connect', function (err) {
     debug('MQTT broker connection established', err)
-    const topic = `${config.mqtt['base-topic']}/#`
+    const topic = `${config.mqtt['base-topic']}/+/set`
     debug(`Subscribing ${topic}`)
     mqttClient.subscribe(topic,(err) => {
         if (!err) {
@@ -82,5 +82,3 @@ mqttClient.on('message', function (topic, message) {
 mqttClient.on('error', function (error) {
     debug('Error occurred:', error)
 })
-
-debug('Shutdown')
