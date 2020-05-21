@@ -2,10 +2,15 @@ const TuyAPI = require('tuyapi')
 const _ = require('lodash')
 const debug = require('debug')('TuyaMqttDevice')
 
+function _deepClearNillValues(o) {
+    return _.mapValues(_.omitBy(o, _.isNil), a => _.isObject(a) ? _deepClearNillValues(a) : a);
+}
+
 const TuyaMqttDevice = function (deviceDescriptor) {
     debug(`new TuyaMqttDevice(${deviceDescriptor})`)
 
     const device = new TuyAPI(_.pick(deviceDescriptor, ['ip', 'id', 'key', 'version']))
+    let state = {}
     let listeners = {}
     let connected = false
 
@@ -27,7 +32,9 @@ const TuyaMqttDevice = function (deviceDescriptor) {
 
     device.on('data', data => {
         debug('Data from device:', data);
-        (listeners['data'] || (() => {}))(data);
+        state = _deepClearNillValues(_.merge(state, data));
+        debug('New state:', state);
+        (listeners['data'] || (() => {}))(state);
     });
 
     device.on('heartbeat', () => {
